@@ -1,4 +1,16 @@
-
+<?php
+    mysql_connect("localhost", "root", "") or die("Error connecting to database: ".mysql_error());
+    /*
+        localhost - it's location of the mysql server, usually localhost
+        root - your username
+        third is your password
+         
+        if connection fails it will stop loading the page and display an error
+    */
+     
+    mysql_select_db("worlhsqb_worldexpress") or die(mysql_error());
+    /* tutorial_search is the name of database we've created */
+?>
 <!DOCTYPE html>
 <html>
     <head>
@@ -96,113 +108,126 @@
             </header>
             <!-- /.Header -->
 
-            <!-- Content Wrapper -->
-            <article class="about-page"> 
-                <!-- Breadcrumb -->
-                <section class="theme-breadcrumb pad-50">                
-                    <div class="theme-container container ">  
-                        <div class="row">
-                            <div class="col-sm-8 pull-left">
-                                <div class="title-wrap">
-                                    <h2 class="section-title no-margin">About us</h2>
-                                    <p class="fs-16 no-margin">Know about us more</p>
-                                </div>
-                            </div>
-                            <div class="col-sm-4">                        
-                                <ol class="breadcrumb-menubar list-inline">
-                                    <li><a href="#" class="gray-clr">Home</a></li>                                   
-                                    <li class="active">About</li>
-                                </ol>
-                            </div>  
-                        </div>
+  <!-- Content Wrapper -->
+  <article> 
+    <!-- Breadcrumb -->
+    <section class="theme-breadcrumb pad-50">                
+        <div class="theme-container container ">  
+            <div class="row">
+                <div class="col-sm-8 pull-left">
+                    <div class="title-wrap">
+                        <h2 class="section-title no-margin"> Search Result </h2>
+                        <p class="fs-16 no-margin">your parcel is safe with World Express Delivery </p>
                     </div>
-                </section>
-                <!-- /.Breadcrumb -->
+                </div>
+                <div class="col-sm-4">                        
+                    <ol class="breadcrumb-menubar list-inline">
+                        <li><a href="index.html" class="gray-clr">Home</a></li>                                   
+                        <li class="active">search result</li>
+                    </ol>
+                </div>  
+            </div>
+        </div>
+    </section>
+    <!-- /.Breadcrumb -->
 
-                <!-- About Us -->
-                <section class="pad-50 about-wrap">
-                    <span class="bg-text"> About </span>
-                    <div class="theme-container container">               
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="about-us pt-10">
-                                    <p class="fs-16 wow fadeInUp" data-wow-offset="50" data-wow-delay=".25s">
-                                        World Express Delivery® delivers a fast, reliable and cheap parcel delivery service to over 220 countries. We don’t ask our customers to choose between cost and quality. We deliver both.
+    <!-- Tracking -->
+    <section class="pt-50 pb-120 tracking-wrap">    
+        <div class="theme-container container ">  
+            <div class="row">
+                <div class="col-md-10 pad-30 wow fadeInLeft" data-wow-offset="50" data-wow-delay=".30s"> 
+                    <div class="prod-info white-clr">
+                        <ul>
+                        <?php
+    $query = $_GET['query']; 
+    // gets value sent over search form
+     
+    $min_length = 3;
+    // you can set minimum length of the query if you want
+     
+    if(strlen($query) >= $min_length){ // if query length is more or equal minimum length then
+         
+        $query = htmlspecialchars($query); 
+        // changes characters used in html to their equivalents, for example: < to &gt;
+         
+        $query = mysql_real_escape_string($query);
+        // makes sure nobody uses SQL injection
+         
+        $raw_results = mysql_query("SELECT * FROM parcel
+            WHERE (`product_id` LIKE '%".$query."%') OR (`text` LIKE '%".$query."%')") or die(mysql_error());
+             
+        // * means that it selects all fields, you can also write: `id`, `title`, `text`
+        // articles is the name of our table
+         
+        // '%$query%' is what we're looking for, % means anything, for example if $query is Hello
+        // it will match "hello", "Hello man", "gogohello", if you want exact match use `title`='$query'
+        // or if you want to match just full word so "gogohello" is out use '% $query %' ...OR ... '$query %' ... OR ... '% $query'
+         
+        if(mysql_num_rows($raw_results) > 0){ // if one or more rows are returned do following
+             
+            while($results = mysql_fetch_array($raw_results)){
+            // $results = mysql_fetch_array($raw_results) puts data from database into array, while it's valid it does the loop
+            echo "<p><h3>".$results['title']."</h3>".$results['text']."</p>";
+                            echo "<li> <span class="title-2">Product Name:</span> <span class="fs-16">".$results['product_name']."</span> </li>"
+                            echo "<li> <span class="title-2">Product id:</span> <span class="fs-16">".$results['product_id']."</span> </li>"
+                            echo "<li> <span class="title-2">Order date:</span> <span class="fs-16">".$results['order_date']."</span> </li>"
+                            echo "<li> <span class="title-2">Order Status:</span> <span class="fs-16">".$results['order_status']."</span> </li>"
+                            echo "<li> <span class="title-2">Destination:</span> <span class="fs-16">".$results['destination']."</span> </li>"
+                            echo "<li> <span class="title-2">Order type:</span> <span class="fs-16">".$results['order_type']."</span> </li>"
+                            echo "<li> <span class="title-2">Phone Number:</span> <span class="fs-16">".$results['phone_no']."</span> </li>"
+                            echo "<li> <span class="title-2">Email:</span> <span class="fs-16">".$results['email']."</span> </li>"
 
-                                        We offer both UK next day delivery and worldwide parcel services from the world’s best couriers including DHL, UPS & DPD at savings of up to 70% and use smart technology to make sending parcels easy..
-                                    </p>
-                                    <ul class="feature">
-                                        <li> 
-                                            <img alt="" src="img/icon-2.png" class="wow fadeInUp" data-wow-offset="50" data-wow-delay=".20s" /> 
-                                            <div class="feature-content wow rotateInDownRight" data-wow-offset="50" data-wow-delay=".30s"> 
-                                                <h2 class="title-1">Fast delivery</h2> 
-                                                <p>Duis autem vel eum iriure dolor</p>                                            
-                                            </div>  
-                                        </li>
-                                        <li> 
-                                            <img alt="" src="img/icon-3.png" class="wow fadeInUp" data-wow-offset="50" data-wow-delay=".20s" /> 
-                                            <div class="feature-content wow rotateInDownRight" data-wow-offset="50" data-wow-delay=".30s"> 
-                                                <h2 class="title-1">secured service</h2> 
-                                                <p>Duis autem vel eum iriure dolor in hendrerit</p>                                            
-                                            </div>  
-                                        </li>
-                                        <li> 
-                                            <img alt="" src="img/icon-4.png" class="wow fadeInUp" data-wow-offset="50" data-wow-delay=".20s" /> 
-                                            <div class="feature-content wow rotateInDownRight" data-wow-offset="50" data-wow-delay=".30s"> 
-                                                <h2 class="title-1">worldwide shipping</h2> 
-                                                <p>Eum iriure dolor in hendrerit in vulputa</p>                                            
-                                            </div>  
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <div class="col-md-6 text-center">                                
-                                <img alt="" src="img/about-img.png" class="effect animated fadeInRight" />
-                            </div>
-                        </div>
+                        }
+             
+                    }
+                    else{ // if there is no matching rows do following
+                        echo "No results";
+                    }
+                     
+                }
+                else{ // if query length is less than minimum
+                    echo "Minimum length is ".$min_length;
+                }
+            ?>
+                        </ul>
                     </div>
-                </section>
-                <!-- /.About Us -->
-
-                <!-- More About Us -->
-                <section class="pad-30 more-about-wrap">
-                    <div class="theme-container container pb-100">               
-                        <div class="row">
-                            <div class="col-md-4 col-sm-4 wow fadeInUp" data-wow-offset="50" data-wow-delay=".20s">
-                                <div class="more-about clrbg-before">
-                                    <h2 class="title-1">what we do</h2>
-                                    <div class="pad-10"></div>
-                                    <p>Our Founder, Roger Sumner-Rivers launched the first company in the
-                                        ParcelHero®Group in 2003, with the goal of making courier delivery
-                                        easier, cheaper and more accessible for both businesses and individuals.</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4 col-sm-4 wow fadeInUp" data-wow-offset="50" data-wow-delay=".30s">
-                                <div class="more-about clrbg-before">
-                                    <h2 class="title-1">Our History</h2>
-                                    <div class="pad-10"></div>
-                                    <p>Our Founder, smith Adams launched
-                                        worldexpress®Group in 2010, with the goal of making delivery
-                                        easier, cheaper and more accessible for both businesses and individuals. Over 100,000 people and businesses around the
-                                        world use World Express®.</p>
-                                </div>
-                            </div>
-                            <div class="col-md-4  col-sm-4 wow fadeInUp" data-wow-offset="50" data-wow-delay=".40s">
-                                <div class="more-about clrbg-before">
-                                    <h2 class="title-1">our mission</h2>
-                                    <div class="pad-10"></div>
-                                    <p>At World Express® we believe in collaboration and a vibrant, lively workplace.
-                                        We never forget that behind every parcel is a human being. We believe in treating
-                                        people like people, and respecting employees, suppliers and most importantly
-                                        customers.</p>
-                                </div>
-                            </div>
-                        </div>
+                </div>
+            </div>
+            <div class="progress-wrap">
+                <div class="progress-status">
+                    <span class="border-left"></span>
+                    <span class="border-right"></span>
+                    <span class="dot dot-left wow fadeIn" data-wow-offset="50" data-wow-delay=".40s"></span>
+                    <span class="themeclr-border wow fadeIn" data-wow-offset="50" data-wow-delay=".50s">  <span class="dot dot-center theme-clr-bg"></span> </span>
+                    <span class="dot dot-right wow fadeIn" data-wow-offset="50" data-wow-delay=".60s"></span>
+                </div>
+                <div class="row progress-content upper-text">
+                    <div class="col-md-3 col-xs-8 col-sm-2">
+                        <p class="fs-12 no-margin"> FROM </p>
+                        <h2 class="title-1 no-margin">London</h2>
                     </div>
-                </section>
-                <!-- /.More About Us -->
-            </article>
-            <!-- /.Content Wrapper -->
+                    <div class="col-md-2 col-xs-8 col-sm-3">
+                        <p class="fs-12 no-margin"> [ <b class="black-clr">6 DAYS </b> ] </p>                                
+                    </div>
+                    <div class="col-md-4 col-xs-8 col-sm-4 text-center">
+                        <p class="fs-12 no-margin"> currently in </p>
+                        <h2 class="title-1 no-margin">singapore</h2>
+                    </div>
+                    <div class="col-md-1 col-xs-8 col-sm-1 no-pad">
+                        <p class="fs-12 no-margin"> [ <b class="black-clr">2 DAYS </b> ] </p>                                
+                    </div>
+                    <div class="col-md-2 col-xs-8 col-sm-2 text-right">
+                        <p class="fs-12 no-margin"> to </p>
+                        <h2 class="title-1 no-margin">dhaka</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- /.Tracking -->
+
+</article>
+<!-- /.Content Wrapper -->
 
                 
                 <div class="footer-bottom mt-5">
